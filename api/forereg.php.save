@@ -1,0 +1,36 @@
+  <?php
+ 
+  $mysqli = require '../database.php';
+  $username=$_GET['name'];
+  $email=$_GET['email'];
+  $password = password_hash($_GET["password"], PASSWORD_DEFAULT);
+  $emneid = $_GET['emne'];
+  $checkUser="SELECT * from user WHERE email='$email'";
+  $checkQuery=mysqli_query($mysqli, $checkUser);
+  if(mysqli_num_rows($checkQuery)>0){
+     $response['error']="002";
+    $response['message']="Email already registered";
+  }
+  else
+  {
+	
+     $insertQuery="INSERT INTO user(name,email,password_hash) VALUES('$username','$email','$password')";
+  $result=mysqli_query($mysqli,$insertQuery);
+  if($result){
+    $last_id = mysqli_insert_id($mysqli);
+    $godkjent = 0;
+    $insquer="INSERT INTO foreleserv2(foreleserid, idemne, godkjent) VALUES('$last_id','$emneid','$godkjent')";
+    $res2=mysqli_query($mysqli,$insquer);
+    if($res2){
+    	$response['error']="000";
+     	$response['message']="Register successful!";
+	}
+  }
+  else
+  {
+    $response['error']="001";
+    $response['message']="Registeration failed!";
+  }
+  }
+  echo json_encode($response);
+?>
