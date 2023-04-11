@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+ <!DOCTYPE html>
+ <html>
+ <head>
+ 	<meta charset="utf-8">
+ 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+ 	<title>Foreleser registrering</title>
+ </head>
+ <body>
+	<a href="index.php"><img src="home.png" alt="Home Button" style="width:64px;height:56px;"></a>
+ 	<h1>Velkommen til foreleser registrering</h1>
+
+ 	<form action="process-signup_fore.php" method="POST" enctype="multipart/form-data">
+ 		<div>
+	 		<label for="name">Navn</label>
+	 		<input type="text" id="name" name="name">
+		</div>
+
+		<div>
+			 <label for="email">E-post</label>
+			 <input type="email" id="email" name="email">
+		</div>
+		 <label for="Emne">Hva underviser du i?</label>
+			<select name="Emne" id="Emne">
+				<option value="1">Datasikkerhet</option>
+  				<option value="2">Programmering 1</option>
+ 				<option value="3">Programmering 2</option>
+				<option value="14">Diskret Matematikk</option>
+			</select> 
+		<div>
+		   <label for="img">Brukerbilde:</label>
+		   <input type="file" id="img" name="img" accept="image/*">
+		</div>
+		<div>
+			 <label for="password">Passord</label>
+			 <input type="password" id="password" name="password">
+		</div>
+		<div>
+			 <label for="password_confirmation">Bekreft passord</label>
+			 <input type="password" id="password_confirmation" name="password_confirmation">
+		</div>
+		<button>Registrer bruker</button>
+ 	</form>
+	<h2>Vennligst merk at (i teorien) du bør forvente ventetid før brukeren din er tilgjengelig da administrator må godkjenne forespørselen på bruker registreringen.</h2>
+	<h3><a href="/steg1">Gå tilbake til startside.</a></h3>
+ </body>
+ </html>

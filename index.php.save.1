@@ -1,0 +1,121 @@
+<?php
+
+session_start();
+
+if (isset($_SESSION["user_id"])) {
+        $mysqli = require __DIR__ . "/database.php";
+
+        $sql_query = "SELECT * FROM user WHERE id = {$_SESSION["user_id"]}";
+
+        $query_result = $mysqli->query($sql_query);
+
+        $user = $query_result->fetch_assoc();
+
+	$user_id =  $user["id"];
+
+}
+
+if(isset($_POST['emner'])) {
+        $emneid = $_POST['emner'];
+} else {
+        $emneid = 0;
+}
+
+?>
+
+
+<!DOCTYPE html>
+ <!DOCTYPE html>
+ <html>
+ <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+        <title>Home</title>
+</head>
+ <body>
+
+        <h1>Home</h1>
+	
+        <?php if (isset($user)): ?>
+
+                <p>Hello <?= htmlspecialchars($user["name"]) ?></p>
+		
+
+		<p></p>
+
+		<form method="post">
+
+            		<div>
+                                <select name="emner" id="emner" onchange="this.form.submit()">
+                                        <option <?php if(isset($_POST['emner']) && $_POST['emner'] == 0) echo "selected='selected'";?> value=0>-Velg emne-</option>
+                                        <option <?php if(isset($_POST['emner']) && $_POST['emner'] == 1) echo "selected='selected'";?> value=1>Datasikkerhet</option>
+                                        <option <?php if(isset($_POST['emner']) && $_POST['emner'] == 2) echo "selected='selected'";?> value=2>Programmering 1</option>
+                                        <option <?php if(isset($_POST['emner']) && $_POST['emner'] == 3) echo "selected='selected'";?> value=3>Programmering 2</option>
+                                        <option <?php if(isset($_POST['emner']) && $_POST['emner'] == 14) echo "selected='selected'";?> value=14>Diskret Matematikk</option>
+
+                                </select>
+                                
+            		</div>
+                </form>
+
+                        <?php if (!$emneid == 0): ?>      
+                                <textarea readonly id="messagesBox" rows="15" cols="65" style="text-align:right";>
+                                        <?php 
+                                                $q = "SELECT * FROM meldingv2 WHERE avsender='$user_id' AND emneid='$emneid'"; 
+                                                $q_result = $mysqli->query($q); 
+
+
+
+
+                                                while($msgs = $q_result->fetch_assoc()) { 
+
+                                                        $idmelding = $msgs['idmelding'];
+                                                        
+                                                        echo ($msgs['innhold'] . "\n\n"); 
+                                                        
+
+                                                        $result = $mysqli->query("SELECT * FROM meldingv2 WHERE til = '$idmelding'");
+
+
+                                                       
+
+                                                        if($result->num_rows == 0) {
+                                                             // row not found, do stuff...
+                                                        } else {
+                                                                while($svar = $result->fetch_assoc()) {
+
+                                                                        echo ("SVAR: " . $svar['innhold'] . "\n\n");
+                                                                }
+                                                        }
+                                                        
+                                                        // if det finnes svar/kommentar, sql spørring for å hente ut meldingen og print denne under. Svar: + svar/kommentar
+
+                                                } 
+                                        ?>
+                                                
+                                </textarea>
+
+
+                                <form action="process-message.php" method="post" novalidate>
+                                        <input id= "emneid" name="emneid" type="hidden" value="<?php echo htmlspecialchars($emneid); ?>">
+                                        <label for="innhold">Message</label>
+                                        <textarea id="innhold" name="innhold" rows=2 cols=30></textarea>
+                                        <input type ="submit" name="submit" id="submit" value="send">
+                                </form>
+                        <?php endif; ?>
+
+                        
+
+                <p><a href="logout.php">Log out</a></p>
+
+        <?php else: ?>
+                <p><a href="login.php">Log in</a> or <a href="user_select.html">create account</a></p>
+        <?php endif; ?>
+	<div>
+		<ul>
+			<li><a href="pin-login.php">Datasikkerhet</a></li>
+			<li><a href="pin-login.php">Programmering 1</a></li>
+			<li><a href="pin-login.php">Programmering 2</a></li>
+			<li><a href="pin-login.php">Diskret matematikk</a></li>
+ </body>
+ </html>

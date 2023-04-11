@@ -1,0 +1,49 @@
+<?php 
+
+session_start();
+
+if (isset($_SESSION["user_id"])) {
+    $mysqli = require __DIR__ . "/database.php";
+
+    $sql_query = "SELECT * FROM user 
+                  WHERE id = {$_SESSION["user_id"]}";
+
+    $query_result = $mysqli->query($sql_query);
+
+    $user = $query_result->fetch_assoc();
+
+    $avsender = $user["id"];
+
+}
+
+$innhold = htmlspecialchars($_POST["innhold"]);
+$emneid = htmlspecialchars($_POST["emner"]);
+if (empty($innhold)) {
+    die("Message is required");
+}
+
+echo ($innhold);
+echo ($avsender);
+$rapstat = 1;
+// kobler til databasen, og lagrer "kobling" i objekt
+$mysqli = require  __DIR__ . "/database.php";
+// placeholder verdier for insert into
+$sql_insert = "INSERT INTO meldingv2 (innhold, avsender, emneid, rapstat) VALUES (?, ?, ?, ?)";
+
+// initialiserer insert, ser etter injections og andre error
+$stmt = $mysqli->stmt_init();
+
+// forbereder sgl INSERT - return false om det er feil på insert
+if (!$stmt->prepare($sql_insert)) {
+    die("SQL error: Hei på deg ");
+
+}
+
+// binder verdier til placeholder verdier i INSERT stmt(sss - argument som spesifiserer datatyper s = string)
+$stmt->bind_param("siii", $innhold, $avsender, $emneid, $rapstat);
+
+$stmt->execute();
+header("Location: index.php");
+exit();
+
+?>

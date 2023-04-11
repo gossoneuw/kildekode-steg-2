@@ -1,0 +1,91 @@
+<?php
+
+session_start();
+
+if (isset($_SESSION["user_id"])) {
+        $mysqli = require __DIR__ . "/database.php";
+
+        $sql_query = "SELECT * FROM user
+                                  WHERE id = {$_SESSION["user_id"]}";
+
+        $query_result = $mysqli->query($sql_query);
+
+        $user = $query_result->fetch_assoc();
+
+        $user_id =  $user["id"];
+
+        $q = "SELECT * FROM meldingv2";
+        $q_result = $mysqli->query($q);
+        $user_msgs = array();
+        while($msgs = $q_result->fetch_assoc()){
+                $user_msgs = $msgs['innhold'];
+        }
+
+
+}
+?>
+
+<!DOCTYPE html>
+ <!DOCTYPE html>
+ <html>
+ <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+	<a href="index.php"><img src="home.png" alt="Home Button" style="width:64px;height:56px;"></a>
+        <title>Home</title>
+</head>
+ <body>
+
+        <h1>Home</h1>
+
+        <?php if (isset($user)): ?>
+
+                <p>Hello <?= htmlspecialchars($user["name"]) ?></p>
+		
+		<form method="post">
+		      <select name="emner" id="emner" onchange="this.form.submit();">
+		      	      <option>velg emne her...</option>
+		      	      <option value="1">Datasikkerhet</option>
+                              <option value="2">Programmering 1</option>
+                              <option value="3">Programmering 2</option>
+			      <option value="14">Diskret matematikk</option>
+                	      </select>
+		</form>
+		<form action="process-message.php" method="post" novalidate>
+                      <div>
+				<label for="innhold">Message</label>
+                                <textarea id="innhold" name="innhold" rows=2 cols=30></textarea>
+                        </div>
+                        <button>Send</button>
+
+                </form>
+	
+		<p></p>
+		
+                <textarea readonly id="messagesBox" rows="15" cols="65">
+
+		<?php
+		$emne_id = $_POST["emner"];
+		$q = "SELECT * FROM meldingv2 WHERE avsender='$user_id' AND emneid='$emne_id'";
+		$q_result = $mysqli->query($q);
+		while($msgs = $q_result->fetch_assoc()){
+			    echo ($msgs['innhold']."\n\n");}
+			    
+		?> </textarea>
+		
+                <p><a href="logout.php">Log out</a></p>
+
+        <?php else: ?>
+                <p><a href="login.php">Log in</a> or <a href="user_select.html">create account</a></p>
+        <?php endif; ?>
+
+         <div>
+                 <ul>
+                        <li><a href="webutvikling.php">Webutvikling</a></li>
+                        <li><a href="databasesystemer.php">Databasesystemer</a></li>
+                        <li><a href="informasjonssikkerhet.php">Informasjonssikkerhet</a></li>
+                        <li><a href="datanettverk.php">Datanettverk</a></li>
+                 </ul>
+         </div>
+ </body>
+ </html>

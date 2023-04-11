@@ -1,0 +1,69 @@
+<?php
+
+session_start();
+
+if (isset($_SESSION["user_id"])) {
+        $mysqli = require __DIR__ . "/database.php";
+
+        $sql_query = "SELECT * FROM user
+                                  WHERE id = {$_SESSION["user_id"]}";
+
+
+        $query_result = $mysqli->query($sql_query);
+
+        $user = $query_result->fetch_assoc();
+	
+	$q = "SELECT `innhold` FROM `melding`";
+	$q_result = $mysqli->query($q);
+	$msgs = $q_result->fetch_assoc();
+}
+
+?>
+
+<!DOCTYPE html>
+ <!DOCTYPE html>
+ <html>
+ <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+        <title>Home</title>
+</head>
+ <body>
+
+        <h1>Home</h1>
+
+        <?php if (isset($user)): ?>
+
+                <p>Hello <?= htmlspecialchars($user["name"]) ?></p>
+                <label for="dog-names">Choose a dog name:</label>
+		<select name="dog-names" id="dog-names">
+    			<option value="1">Datasikkerhet</option>
+  			<option value="2">Programmering 1</option>
+  			<option value="3">Programmering 2</option>
+  			<option value="14">Reesetion>
+		</select>
+                <p></p>
+                <textarea id="messagesBox" rows="15" cols="65"><?php echo implode(', ', $msgs); ?></textarea>
+                <form>
+                        <p>From: <?= htmlspecialchars($user["name"]) ?></p>
+                        <textarea id="message" placeholder="Type your message here.." rows="2" cols="35"></textarea>
+                        <input type="submit" value="submit">
+                </form>
+                 </form>
+
+                <p><a href="logout.php">Log out</a></p>
+
+        <?php else: ?>
+                <p><a href="login.php">Log in</a> or <a href="signup.html">create account</a></p>
+        <?php endif; ?>
+
+         <div>
+                 <ul>
+                        <li><a href="webutvikling.php">Webutvikling</a></li>
+                        <li><a href="databasesystemer.php">Databasesystemer</a></li>
+                        <li><a href="informasjonssikkerhet.php">Informasjonssikkerhet</a></li>
+                        <li><a href="datanettverk.php">Datanettverk</a></li>
+                 </ul>
+         </div>
+ </body>
+ </html>

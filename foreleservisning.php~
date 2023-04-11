@@ -1,0 +1,51 @@
+<?php
+
+session_start();
+
+if(isset($_SESSION["user_id"])) {
+	$mysqli = require __DIR__ . "/database.php";
+
+	$sql_query = "SELECT * FROM foreleserv2 WHERE foreleserid = {$_SESSION['user_id']}";
+	$namequery = "SELECT * FROM user WHERE id = {$_SESSION['user_id']}";
+	$query_result = $mysqli->query($sql_query);
+	$user = $query_result -> fetch_assoc();
+	$nameresult = $mysqli->query($namequery);
+	$nameget = $nameresult ->fetch_assoc();
+	$emneid = $user["idemne"];
+}
+?>
+<!DOCTYPE html>
+ <!DOCTYPE html>
+ <html>
+ <head>
+ 	<meta charset="utf-8">
+ 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+ 	<title>Home</title>
+ </head>
+ <body>
+
+ 	<?php if (isset($user)): ?>
+	 	<h1>Her er meldingene for emne du har.</h1>
+
+ 		<p>Hei <?= htmlspecialchars($nameget["name"]) ?></p>
+
+ 		<p><a href="logout.php">Log out</a></p>
+	<?php
+		$img = $user["bildeid"];
+	?>
+	<img src="brukerbilde/<?php echo $img; ?>">
+ 	<?php else: ?>
+
+ 		<h1>Enten har du glemt å logge inn eller så skal du ikke være her. Hvem av de er du?</h1>
+		<h3><a href="/steg1">Gå tilbake til startside.</a></h3>
+ 	<?php endif; ?>
+	<?php
+	$emneid = $user["idemne"]; //Henter emneid. Trolig ikke nødvendig da det blir gjort lengere oppe, men lar det stå.
+	$q = "SELECT * FROM meldingv2 WHERE emneid='$emneid'"; //Hva spørringen er
+	$q_result = $mysqli->query($q); //Utfører spørringen
+	while($msgs = $q_result->fetch_assoc()){ //skriver ut alle meldingene som er knyttet til emne. Denne løkken vil lage en div boks sammen med en form og en submit knapp for å sende svar til hver enkelt melding. Hver "form" får hver sin ID hvor ID-en består av ID-en til orginal meldingen.
+		echo("<div>".$msgs['innhold']."<br>"."<form> <label for='svar'>Svare på melding?(Out of order. Please send help to ST)</label><br> <input type='text' id='$msgs[idmelding]' name='ans'/> </form> <input type='submit' value='Send svar' />  <br>"."</div>");
+	}
+	?>
+ </body>
+ </html>
